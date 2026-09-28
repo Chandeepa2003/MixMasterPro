@@ -1,0 +1,179 @@
+/* =============================================================
+   Developer Panel CSS — machine tuning UI
+   ============================================================= */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:     #07101e;
+  --bg2:    #0a1528;
+  --bg3:    #0d1c36;
+  --border: #1a2f50;
+  --cyan:   #00d4ff;
+  --green:  #10b981;
+  --yellow: #fbbf24;
+  --red:    #ef4444;
+  --blue:   #3b82f6;
+  --purple: #8b5cf6;
+  --text:   #c8d8f0;
+  --muted:  #4a6080;
+  --font:   'Inter', sans-serif;
+  --mono:   'JetBrains Mono', monospace;
+}
+
+html, body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100%; }
+
+/* ── Header ─────────────────────────────────────────────────── */
+.dev-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 62px;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.header-brand   { display: flex; align-items: center; gap: 14px; }
+.brand-icon     { font-size: 28px; }
+.brand-title    { font-size: 18px; font-weight: 700; color: #e8f0ff; }
+.brand-title span { color: var(--cyan); }
+.brand-sub      { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.header-nav     { display: flex; gap: 10px; }
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn {
+  padding: 8px 16px; border-radius: 7px; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text); font-size: 12px; font-family: var(--font);
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.btn:hover { background: var(--border); color: #fff; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-cyan   { border-color: var(--cyan);   color: var(--cyan);   }
+.btn-green  { border-color: var(--green);  color: var(--green);  }
+.btn-yellow { border-color: var(--yellow); color: var(--yellow); }
+.btn-red    { border-color: var(--red);    color: var(--red);    }
+.btn-save   { border-color: var(--green); color: var(--green); background: #0a2018; font-weight: 600; }
+.btn-save:hover { background: #0f3025; }
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.dev-main { max-width: 1300px; margin: 0 auto; padding: 28px 20px; display: flex; flex-direction: column; gap: 32px; }
+
+/* ── Section headers ─────────────────────────────────────────── */
+.section-title {
+  font-size: 11px; font-family: var(--mono); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::before { content: ''; display: block; width: 3px; height: 14px; background: var(--cyan); border-radius: 2px; }
+
+/* ── Pump calibration cards ──────────────────────────────────── */
+.pump-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.pump-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.pump-card:hover { border-color: #2a4070; }
+.pump-card.active-pump { border-color: var(--cyan); box-shadow: 0 0 18px var(--cyan)22; }
+
+.pump-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+.pump-slot-badge {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; font-family: var(--mono);
+  border: 2px solid; flex-shrink: 0;
+}
+.pump-slot-info { flex: 1; }
+.pump-slot-name { font-size: 14px; font-weight: 600; }
+.pump-slot-sub  { font-size: 11px; color: var(--muted); }
+
+.pump-cal-display {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px;
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px;
+}
+.pump-cal-val  { font-family: var(--mono); font-size: 26px; font-weight: 600; color: var(--cyan); }
+.pump-cal-unit { font-size: 12px; color: var(--muted); }
+.pump-cal-label{ font-size: 10px; color: var(--muted); margin-left: auto; }
+
+.cal-form { display: flex; flex-direction: column; gap: 10px; }
+.cal-row  { display: flex; gap: 8px; align-items: center; }
+.cal-row label { font-size: 11px; color: var(--muted); width: 110px; flex-shrink: 0; }
+.cal-row input, .cal-row select {
+  flex: 1; background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 7px 10px;
+  font-size: 12px; font-family: var(--mono);
+}
+.cal-row input:focus, .cal-row select:focus { outline: none; border-color: var(--cyan); }
+
+.cal-result {
+  font-size: 11px; font-family: var(--mono);
+  padding: 6px 10px; border-radius: 6px;
+  background: var(--bg3); color: var(--muted);
+  min-height: 30px;
+}
+.cal-result.ok   { color: var(--green); border-left: 3px solid var(--green); }
+.cal-result.warn { color: var(--yellow); border-left: 3px solid var(--yellow); }
+
+/* ── Machine params ──────────────────────────────────────────── */
+.params-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+.params-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px; margin-bottom: 16px;
+}
+.param-item {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.param-label { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; }
+.param-desc  { font-size: 10px; color: #3a5070; margin-bottom: 4px; }
+.param-input {
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 7px 10px;
+  font-size: 13px; font-family: var(--mono); width: 100%;
+}
+.param-input:focus { outline: none; border-color: var(--cyan); }
+.param-unit { font-size: 10px; color: var(--muted); align-self: flex-end; }
+
+/* ── Pump-recipe mapping ─────────────────────────────────────── */
+.mapping-table {
+  width: 100%; border-collapse: collapse;
+}
+.mapping-table th, .mapping-table td {
+  padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.mapping-table th { color: var(--muted); font-size: 10px; font-family: var(--mono); text-transform: uppercase; }
+.mapping-table td input, .mapping-table td select {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 5px; padding: 5px 8px;
+  font-size: 12px; font-family: var(--mono); width: 100%;
+}
+.mapping-table td input:focus, .mapping-table td select:focus { outline: none; border-color: var(--cyan); }
+.color-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
+
+/* ── Toast notification ─────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--bg2); border: 1px solid var(--green);
+  color: var(--green); border-radius: 10px; padding: 12px 20px;
+  font-size: 13px; z-index: 1000;
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { border-color: var(--red); color: var(--red); }

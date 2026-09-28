@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MixMaster Pro — Payment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    body { background: var(--bg-deep); min-height: 100vh; display: flex; flex-direction: column; }
+    .pay-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 60px; }
+    .pay-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 960px; width: 100%; }
+    @media(max-width:768px) { .pay-container { grid-template-columns: 1fr; } }
+    .pay-panel {
+      background: var(--bg-card); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card); padding: 32px;
+    }
+    .pay-panel-title {
+      font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700;
+      margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+    }
+    .pay-panel-title span { font-size: 1.4rem; }
+    /* Order Summary */
+    .order-items { margin-bottom: 20px; }
+    .order-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--glass-border); }
+    .order-item-left { display: flex; align-items: center; gap: 12px; }
+    .order-item-img { width: 52px; height: 52px; object-fit: cover; border-radius: 10px; }
+    .order-item-name { font-size: 0.95rem; font-weight: 600; }
+    .order-item-qty { font-size: 0.8rem; color: var(--text-muted); }
+    .order-item-price { font-size: 1rem; font-weight: 700; color: var(--gold); }
+    .order-totals { margin-top: 16px; }
+    .total-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; }
+    .total-row.big { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); }
+    .total-divider { height: 1px; background: var(--glass-border); margin: 12px 0; }
+    /* Form */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; }
+    .form-input {
+      width: 100%; padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-btn);
+      color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      transition: var(--transition); outline: none;
+    }
+    .form-input:focus { border-color: var(--gold); background: rgba(245,158,11,0.05); }
+    /* Payment Methods */
+    .pay-methods { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 24px; }
+    .pay-method {
+      border: 2px solid var(--glass-border); border-radius: 14px;
+      padding: 16px 10px; text-align: center; cursor: pointer;
+      transition: var(--transition); background: var(--bg-card);
+    }
+    .pay-method:hover { border-color: var(--gold); background: rgba(245,158,11,0.06); }
+    .pay-method.selected { border-color: var(--gold); background: rgba(245,158,11,0.12); box-shadow: var(--shadow-gold); }
+    .pay-method-icon { font-size: 1.8rem; margin-bottom: 6px; }
+    .pay-method-name { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+    .pay-method.selected .pay-method-name { color: var(--gold); }
+    /* Pay Button */
+    .pay-btn {
+      width: 100%; padding: 18px; border: none; border-radius: var(--radius-btn);
+      background: var(--gradient-brand); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .pay-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.35); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .pay-btn svg { width: 20px; height: 20px; }
+    /* Success overlay */
+    .success-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(7,7,15,0.97);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .success-overlay.show { opacity: 1; pointer-events: all; }
+    .success-icon { font-size: 5rem; margin-bottom: 24px; animation: bounceIn 0.6s ease; }
+    .success-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; }
+    .success-msg { color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 32px; text-align: center; }
+    .success-btn {
+      padding: 16px 40px; background: var(--gradient-gold);
+      border: none; border-radius: 50px; color: #07070f;
+      font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: var(--transition);
+    }
+    .success-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-gold); }
+    @keyframes bounceIn {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    /* Empty cart message */
+    .empty-cart-msg {
+      text-align: center; padding: 80px 24px; color: var(--text-secondary); max-width: 400px; margin: auto;
+    }
+    .empty-cart-msg h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 12px; }
+    .back-link {
+      display: inline-block; margin-top: 24px; padding: 14px 32px;
+      background: var(--gradient-gold); color: #07070f; font-weight: 700;
+      border-radius: 50px; text-decoration: none; transition: var(--transition);
+    }
+    .back-link:hover { transform: translateY(-2px); box-shadow: var(--shadow-gold); }
+  </style>
+</head>
+<body>
+  <canvas id="particles" class="particles-canvas"></canvas>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo" style="text-decoration:none">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 6h24l-3 14H11L8 6z" stroke="url(#g1)" stroke-width="2" fill="none"/><path d="M11 20v10a2 2 0 002 2h14a2 2 0 002-2V20" stroke="url(#g1)" stroke-width="2"/><circle cx="20" cy="10" r="2" fill="url(#g1)"/><defs><linearGradient id="g1" x1="8" y1="6" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs></svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">MixMaster</span>
+          <span class="logo-sub">PRO</span>
+        </div>
+      </a>
+      <div style="font-size:0.85rem;color:var(--text-muted);">Step 2 of 3 — Payment</div>
+    </div>
+  </header>
+
+  <main class="pay-page" id="mainContent">
+    <div class="pay-container" id="payContainer"></div>
+  </main>
+
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-icon">🎉</div>
+    <h2 class="success-title gradient-text">Payment Successful!</h2>
+    <p class="success-msg">Your order has been confirmed.<br/>Redirecting to your queue status...</p>
+    <button class="success-btn" onclick="goToQueue()">Track My Order →</button>
+  </div>
+
+  <script>
+  // Particles
+  (function(){
+    const c=document.getElementById('particles'),ctx=c.getContext('2d');
+    let p=[];
+    function r(){c.width=window.innerWidth;c.height=window.innerHeight;}
+    r(); window.addEventListener('resize',r);
+    for(let i=0;i<40;i++) p.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5+0.5,dx:(Math.random()-.5)*.25,dy:(Math.random()-.5)*.25,col:Math.random()>.5?'#f59e0b':'#06b6d4',a:Math.random()*.4+.1});
+    function draw(){ctx.clearRect(0,0,c.width,c.height);p.forEach(pt=>{ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r,0,Math.PI*2);ctx.fillStyle=pt.col;ctx.globalAlpha=pt.a;ctx.fill();pt.x+=pt.dx;pt.y+=pt.dy;if(pt.x<0||pt.x>c.width)pt.dx*=-1;if(pt.y<0||pt.y>c.height)pt.dy*=-1;});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+    draw();
+  })();
+
+  let cart = JSON.parse(sessionStorage.getItem('mm_checkout') || localStorage.getItem('mm_cart') || '[]');
+  let selectedMethod = 'card';
+  let placedOrderId = null;
+
+  function renderPage() {
+    const container = document.getElementById('payContainer');
+    if (!cart.length) {
+      document.getElementById('mainContent').innerHTML = `
+        <div class="empty-cart-msg">
+          <div style="font-size:4rem;margin-bottom:16px">🛒</div>
+          <h2>Cart is Empty</h2>
+          <p>Go back and add some drinks first!</p>
+          <a href="/" class="back-link">← Back to Menu</a>
+        </div>`;
+      return;
+    }
+
+    const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
+    const total = subtotal + 0.99;
+
+    container.innerHTML = `
+      <div class="pay-panel">
+        <h2 class="pay-panel-title"><span>🧾</span> Order Summary</h2>
+        <div class="order-items">
+          ${cart.map(item => `
+            <div class="order-item">
+              <div class="order-item-left">
+                <img src="${item.image}" alt="${item.name}" class="order-item-img"
+                     onerror="this.src='/images/cocktails_bg.png'"/>
+                <div>
+                  <div class="order-item-name">${item.name}</div>
+                  <div class="order-item-qty">Qty: ${item.qty}</div>
+                </div>
+              </div>
+              <div class="order-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+            </div>`).join('')}
+        </div>
+        <div class="order-totals">
+          <div class="total-row"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+          <div class="total-row"><span>Service Fee</span><span>$0.99</span></div>
+          <div class="total-divider"></div>
+          <div class="total-row big"><span>Total</span><span style="color:var(--gold)">$${total.toFixed(2)}</span></div>
+        </div>
+      </div>
+
+      <div class="pay-panel">
+        <h2 class="pay-panel-title"><span>💳</span> Payment Details</h2>
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input id="custName" class="form-input" type="text" placeholder="e.g. Alex Johnson"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Table / Seat Number</label>
+          <input id="custTable" class="form-input" type="text" placeholder="e.g. Table 7 or Bar Seat 3"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <div class="pay-methods">
+            <div class="pay-method selected" id="method-card" onclick="selectMethod('card')">
+              <div class="pay-method-icon">💳</div>
+              <div class="pay-method-name">Card</div>
+            </div>
+            <div class="pay-method" id="method-cash" onclick="selectMethod('cash')">
+              <div class="pay-method-icon">💵</div>
+              <div class="pay-method-name">Cash</div>
+            </div>
+            <div class="pay-method" id="method-qr" onclick="selectMethod('qr')">
+              <div class="pay-method-icon">📱</div>
+              <div class="pay-method-name">QR Pay</div>
+            </div>
+          </div>
+        </div>
+        <button class="pay-btn" id="payBtn" onclick="processPayment()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+          </svg>
+          <span>Pay $${total.toFixed(2)}</span>
+        </button>
+      </div>`;
+  }
+
+  function selectMethod(method) {
+    selectedMethod = method;
+    document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('selected'));
+    document.getElementById('method-' + method).classList.add('selected');
+  }
+
+  async function processPayment() {
+    const name = document.getElementById('custName').value.trim() || 'Guest';
+    const table = document.getElementById('custTable').value.trim() || 'Bar';
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner" style="width:24px;height:24px;border-width:2px;margin:0"></div><span>Processing...</span>';
+    await new Promise(r => setTimeout(r, 1800));
+    try {
+      const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
+      const customItems  = cart.filter(c => c.isCustom);
+      const regularItems = cart.filter(c => !c.isCustom);
+      let placedId = null;
+      if (regularItems.length) {
+        const res = await fetch('/api/orders', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerName: name, tableNumber: table,
+            items: regularItems.map(c => ({ recipeId: c.id, name: c.name, qty: c.qty, price: c.price })),
+            paymentMethod: selectedMethod, totalAmount: subtotal + 0.99
+          })
+        });
+        const order = await res.json();
+        placedId = order.id;
+      }
+      for (const item of customItems) {
+        const res = await fetch('/api/orders/custom', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerName: name, tableNumber: table,
+            drinkName: item.name, components: item.components,
+            paymentMethod: selectedMethod, totalAmount: item.price * item.qty
+          })
+        });
+        const order = await res.json();
+        placedId = placedId || order.id;
+      }
+      placedOrderId = placedId;
+      localStorage.setItem('mm_last_order', placedId);
+      localStorage.removeItem('mm_cart');
+      sessionStorage.removeItem('mm_checkout');
+      document.getElementById('successOverlay').classList.add('show');
+    } catch(e) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>⚠️ Payment failed — try again</span>';
+    }
+  }
+
+  function goToQueue() {
+    window.location.href = `/queue.html?order=${placedOrderId}`;
+  }
+
+  renderPage();
+  </script>
+</body>
+</html>

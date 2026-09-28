@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MixMaster — Developer Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/developer.css">
+</head>
+<body>
+
+<header class="dev-header">
+  <div class="header-brand">
+    <span class="brand-icon">⚙</span>
+    <div>
+      <div class="brand-title">MixMaster <span>Developer Panel</span></div>
+      <div class="brand-sub">Hardware Tuning &amp; Calibration</div>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="/admin" class="btn">← Admin</a>
+    <a href="/simulator" class="btn btn-cyan">🖥 Simulator</a>
+    <button id="btnSaveAll" class="btn btn-save">💾 Save All Changes</button>
+  </nav>
+</header>
+
+<main class="dev-main">
+
+  <!-- ── 1. Pump Calibration ──────────────────────────────── -->
+  <section>
+    <div class="section-title">Pump Calibration — ms per ml tuning</div>
+    <div class="pump-grid" id="pumpGrid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- ── 2. Hardware Diagnostics & Testing ──────────────────── -->
+  <section>
+    <div class="section-title">Hardware Diagnostics &amp; Testing
+      <span style="font-size:14px; color:#10b981; float:right; background:#0d1c36; padding:4px 12px; border-radius:12px; margin-top:-4px;" id="ultrasonicReading">Ultrasonic: -- mm</span>
+    </div>
+    <div class="params-card" style="display:flex; flex-wrap:wrap; gap:16px;">
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Mixer Motor</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('mixer', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('mixer', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Out Pump 1 (Cup)</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('outPump1', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('outPump1', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Out Pump 2 (Drain)</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('outPump2', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('outPump2', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Cleaning Pump (Water)</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('cleanPump', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('cleanPump', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Pump 1</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('pump1', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('pump1', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Pump 2</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('pump2', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('pump2', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Pump 3</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('pump3', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('pump3', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Pump 4</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('pump4', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('pump4', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Pump 5</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('pump5', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('pump5', false)">OFF</button>
+      </div>
+      <div class="test-group" style="flex: 1 1 200px; padding:12px; border:1px solid #1a2a44; border-radius:8px; text-align:center;">
+        <label style="display:block; margin-bottom:8px; color:#a3b4cc; font-size:13px;">Pump 6</label>
+        <button class="btn btn-save" style="margin-right:8px;" onclick="testComponent('pump6', true)">ON</button>
+        <button class="btn" style="background:#2a3b59;" onclick="testComponent('pump6', false)">OFF</button>
+      </div>
+    </div>
+    <div style="margin-top: 1rem; border-top: 1px solid #1e293b; padding-top: 1rem; text-align:center;">
+      <button class="btn" style="background:#3b82f6;" onclick="manualReadDistance()">Read Ultrasonic Distance Now</button>
+    </div>
+  </section>
+
+  <!-- ── 2. Machine Parameters ────────────────────────────── -->
+  <section>
+    <div class="section-title">Machine Parameters</div>
+    <div class="params-card">
+      <div class="params-grid" id="paramsGrid">
+        <!-- Populated by JS -->
+      </div>
+      <button class="btn btn-save" id="btnSaveParams">💾 Save Parameters</button>
+    </div>
+  </section>
+
+  <!-- ── 3. Pump → Liquid Mapping ─────────────────────────── -->
+  <section>
+    <div class="section-title">Pump Slot → Liquid Mapping</div>
+    <div class="params-card">
+      <table class="mapping-table" id="mappingTable">
+        <thead>
+          <tr>
+            <th>Slot</th>
+            <th>Label</th>
+            <th>Liquid Name</th>
+            <th>Color</th>
+            <th>Current ms/ml</th>
+          </tr>
+        </thead>
+        <tbody id="mappingBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+      <br>
+      <button class="btn btn-save" id="btnSaveMapping">💾 Save Mapping</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="/admin/js/developer.js"></script>
+</body>
+</html>

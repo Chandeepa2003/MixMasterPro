@@ -1,0 +1,56 @@
+{
+  "machine": {
+    "bowlCapacityMl": 500,
+    "bowlFullMm": 50,
+    "bowlEmptyMm": 280,
+    "cleanFillMl": 400,
+    "cleanMixTimeS": 30,
+    "cupOverflowMm": 20,
+    "outPumpMsPerMl": null
+  },
+  "pumps": [
+    {
+      "slot": 1,
+      "label": "Pump 1",
+      "liquid": "White Rum",
+      "color": "#ff6b6b",
+      "msPerMl": 1411
+    },
+    {
+      "slot": 2,
+      "label": "Pump 2",
+      "liquid": "Lemon Juice",
+      "color": "#ffd93d",
+      "msPerMl": 1411
+    },
+    {
+      "slot": 3,
+      "label": "Pump 3",
+      "liquid": "Mint Syrup",
+      "color": "#6bcb77",
+      "msPerMl": 1411
+    },
+    {
+      "slot": 4,
+      "label": "Pump 4",
+      "liquid": "Blue Curaçao",
+      "color": "#4d96ff",
+      "msPerMl": 1411
+    },
+    {
+      "slot": 5,
+      "label": "Pump 5",
+      "liquid": "Orange Juice",
+      "color": "#ff922b",
+      "msPerMl": 1411
+    },
+    {
+      "slot": 6,
+      "label": "Pump 6",
+      "liquid": "Grenadine Syrup",
+      "color": "#cc5de8",
+      "msPerMl": 1411
+    }
+  ],
+  "updatedAt": "2026-09-28T02:22:51.353Z"
+}

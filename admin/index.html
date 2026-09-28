@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MixMaster Pro — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/admin/css/admin.css"/>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <canvas id="loginParticles" class="particles-canvas"></canvas>
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 40 40" fill="none" style="width:48px;height:48px">
+        <path d="M8 6h24l-3 14H11L8 6z" stroke="url(#gl)" stroke-width="2" fill="none"/>
+        <path d="M11 20v10a2 2 0 002 2h14a2 2 0 002-2V20" stroke="url(#gl)" stroke-width="2"/>
+        <circle cx="20" cy="10" r="2" fill="url(#gl)"/>
+        <defs><linearGradient id="gl" x1="8" y1="6" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+      </svg>
+      <div>
+        <div class="login-brand">MixMaster Pro</div>
+        <div class="login-sub">Admin Panel</div>
+      </div>
+    </div>
+    <h2 class="login-title">Welcome Back</h2>
+    <p class="login-desc">Enter your admin password to continue</p>
+    <div class="login-form">
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="loginPass" class="form-input" type="password" placeholder="••••••••••"
+               onkeydown="if(event.key==='Enter') doLogin()"/>
+      </div>
+      <div class="login-error" id="loginError"></div>
+      <button class="login-btn" onclick="doLogin()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+        </svg>
+        Sign In
+      </button>
+    </div>
+    <p class="login-hint">Default: <code>mixmaster2025</code></p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div class="admin-app" id="adminApp" style="display:none">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🍹</div>
+      <div>
+        <div class="sidebar-brand">MixMaster</div>
+        <div class="sidebar-sub">Admin</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" id="nav-orders" onclick="showSection('orders')">
+        <span class="nav-icon">📋</span><span>Orders Queue</span>
+        <span class="nav-badge" id="queueBadge">0</span>
+      </button>
+      <button class="nav-item" id="nav-recipes" onclick="showSection('recipes')">
+        <span class="nav-icon">🍸</span><span>Recipes</span>
+      </button>
+      <button class="nav-item" id="nav-analytics" onclick="showSection('analytics')">
+        <span class="nav-icon">📊</span><span>Analytics</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/" target="_blank" class="sidebar-link">🔗 Customer View</a>
+      <button class="sidebar-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-page-title" id="adminPageTitle">Orders Queue</h1>
+      <div class="topbar-right">
+        <label style="color:white; margin-right: 15px; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="autoCleanToggle" onchange="toggleAutoClean(this.checked)" style="width:18px; height:18px; cursor:pointer;"> Auto-Clean</label>`n        <button class="topbar-add-btn" id="btnCleanSystem" onclick="triggerCleanSystem()" style="background-color: #0ea5e9; margin-right: 15px;">
+          § Clean System
+        </button>
+        <div class="topbar-status">
+          <span class="status-dot-live"></span>
+          <span>Live Updates</span>
+        </div>
+        <button class="topbar-add-btn" id="topbarAddBtn" onclick="openRecipeModal()" style="display:none">
+          + Add Recipe
+        </button>
+      </div>
+    </div>
+
+    <!-- ORDERS SECTION -->
+    <section class="admin-section" id="section-orders">
+
+      <!-- Machine Status Widget (polls /api/machine/status every 3s) -->
+      <div class="machine-widget" id="machineWidget">
+        <div class="mw-row">
+          <div class="mw-state" style="border-color:#4a6080;color:#4a6080">IDLE</div>
+          <div class="mw-readings">
+            <span>🌡 --°C</span>
+            <span>💧 -- ml</span>
+            <span>○ ESP32 not connected</span>
+          </div>
+          <div class="mw-online"><span style="color:#4a6080">Waiting for ESP32...</span></div>
+        </div>
+      </div>
+
+      <div class="orders-filters">
+        <button class="filter-btn active" onclick="filterOrders('all', this)">All</button>
+        <button class="filter-btn" onclick="filterOrders('queued', this)">⏳ Queued</button>
+        <button class="filter-btn" onclick="filterOrders('mixing', this)">🔄 Mixing</button>
+        <button class="filter-btn" onclick="filterOrders('ready', this)">✅ Ready</button>
+        <button class="filter-btn" onclick="filterOrders('collected', this)">🎊 Collected</button>
+      </div>
+      <div class="orders-grid" id="ordersGrid">
+        <div class="loading-state"><div class="spinner"></div><p>Loading orders...</p></div>
+      </div>
+    </section>
+
+    <!-- RECIPES SECTION -->
+    <section class="admin-section" id="section-recipes" style="display:none">
+      <div class="recipes-grid" id="recipesGrid">
+        <div class="loading-state"><div class="spinner"></div><p>Loading recipes...</p></div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS SECTION -->
+    <section class="admin-section" id="section-analytics" style="display:none">
+      <div class="analytics-grid" id="analyticsGrid">
+        <div class="loading-state"><div class="spinner"></div><p>Loading analytics...</p></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- RECIPE MODAL -->
+<div class="modal-overlay" id="recipeModal" style="display:none" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Add New Recipe</h3>
+      <button class="modal-close" onclick="closeRecipeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="admin-toast" id="adminToast"></div>
+
+<script src="/admin/js/admin.js"></script>
+</body>
+</html>
+

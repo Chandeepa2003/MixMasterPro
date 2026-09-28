@@ -1,0 +1,224 @@
+[
+  {
+    "id": "r1",
+    "name": "Classic Mojito",
+    "category": "cocktail",
+    "description": "The ultimate summer classic — white rum, fresh lemon juice, and cool mint syrup, perfectly balanced in every sip.",
+    "price": 12.99,
+    "image": "/images/mojito.png",
+    "alcoholLevel": 18,
+    "prepTime": 2,
+    "totalMl": 170,
+    "ingredients": [
+      { "name": "White Rum",    "amount": 60, "unit": "ml" },
+      { "name": "Lemon Juice",  "amount": 30, "unit": "ml" },
+      { "name": "Mint Syrup",   "amount": 20, "unit": "ml" },
+      { "name": "Orange Juice", "amount": 60, "unit": "ml" }
+    ],
+    "tags": ["refreshing", "citrus", "popular"],
+    "available": true
+  },
+  {
+    "id": "r2",
+    "name": "Rum Sunrise",
+    "category": "cocktail",
+    "description": "A stunning sunrise in a glass — white rum layered with vibrant orange juice and a grenadine sunset streak.",
+    "price": 13.99,
+    "image": "/images/daiquiri.png",
+    "alcoholLevel": 20,
+    "prepTime": 2,
+    "totalMl": 200,
+    "ingredients": [
+      { "name": "White Rum",       "amount": 60,  "unit": "ml" },
+      { "name": "Orange Juice",    "amount": 120, "unit": "ml" },
+      { "name": "Grenadine Syrup", "amount": 20,  "unit": "ml" }
+    ],
+    "tags": ["fruity", "tropical", "vibrant"],
+    "available": true
+  },
+  {
+    "id": "r3",
+    "name": "Blue Devil",
+    "category": "cocktail",
+    "description": "A bold, electric cocktail — white rum and striking blue curaçao sharpened with a hit of fresh lemon.",
+    "price": 14.99,
+    "image": "/images/blue_lagoon.png",
+    "alcoholLevel": 22,
+    "prepTime": 2,
+    "totalMl": 160,
+    "ingredients": [
+      { "name": "White Rum",    "amount": 60, "unit": "ml" },
+      { "name": "Blue Curaçao", "amount": 60, "unit": "ml" },
+      { "name": "Lemon Juice",  "amount": 40, "unit": "ml" }
+    ],
+    "tags": ["bold", "striking", "electric"],
+    "available": true
+  },
+  {
+    "id": "r4",
+    "name": "Tropical Punch",
+    "category": "cocktail",
+    "description": "A full-flavour tropical punch — rum, orange, lemon and grenadine all in perfect harmony.",
+    "price": 15.99,
+    "image": "/images/cocktails_bg.png",
+    "alcoholLevel": 16,
+    "prepTime": 3,
+    "totalMl": 230,
+    "ingredients": [
+      { "name": "White Rum",       "amount": 50,  "unit": "ml" },
+      { "name": "Orange Juice",    "amount": 90,  "unit": "ml" },
+      { "name": "Lemon Juice",     "amount": 30,  "unit": "ml" },
+      { "name": "Grenadine Syrup", "amount": 30,  "unit": "ml" },
+      { "name": "Mint Syrup",      "amount": 30,  "unit": "ml" }
+    ],
+    "tags": ["tropical", "fruity", "crowd-pleaser"],
+    "available": true
+  },
+  {
+    "id": "r5",
+    "name": "Rum Sour",
+    "category": "cocktail",
+    "description": "Smooth white rum meets tart lemon juice, softened with a splash of grenadine — tangy and satisfying.",
+    "price": 13.49,
+    "image": "/images/whiskey_sour.png",
+    "alcoholLevel": 20,
+    "prepTime": 2,
+    "totalMl": 155,
+    "ingredients": [
+      { "name": "White Rum",       "amount": 60, "unit": "ml" },
+      { "name": "Lemon Juice",     "amount": 45, "unit": "ml" },
+      { "name": "Grenadine Syrup", "amount": 25, "unit": "ml" },
+      { "name": "Mint Syrup",      "amount": 25, "unit": "ml" }
+    ],
+    "tags": ["tangy", "smooth", "classic"],
+    "available": true
+  },
+  {
+    "id": "r6",
+    "name": "Rum Collins",
+    "category": "cocktail",
+    "description": "A long, refreshing cocktail — rum, lemon, mint and orange juice over ice. Summer in a glass.",
+    "price": 13.99,
+    "image": "/images/mojito.png",
+    "alcoholLevel": 14,
+    "prepTime": 2,
+    "totalMl": 240,
+    "ingredients": [
+      { "name": "White Rum",    "amount": 50,  "unit": "ml" },
+      { "name": "Lemon Juice",  "amount": 30,  "unit": "ml" },
+      { "name": "Mint Syrup",   "amount": 20,  "unit": "ml" },
+      { "name": "Orange Juice", "amount": 100, "unit": "ml" },
+      { "name": "Blue Curaçao", "amount": 40,  "unit": "ml" }
+    ],
+    "tags": ["long drink", "refreshing", "citrus"],
+    "available": true
+  },
+  {
+    "id": "r7",
+    "name": "Blue Lagoon",
+    "category": "mocktail",
+    "description": "An electric-blue escape — blue curaçao syrup, lemon and cooling mint, no alcohol and all the vibes.",
+    "price": 9.99,
+    "image": "/images/blue_lagoon.png",
+    "alcoholLevel": 0,
+    "prepTime": 2,
+    "totalMl": 200,
+    "ingredients": [
+      { "name": "Blue Curaçao", "amount": 60,  "unit": "ml" },
+      { "name": "Lemon Juice",  "amount": 40,  "unit": "ml" },
+      { "name": "Mint Syrup",   "amount": 30,  "unit": "ml" },
+      { "name": "Orange Juice", "amount": 70,  "unit": "ml" }
+    ],
+    "tags": ["alcohol-free", "tropical", "vibrant"],
+    "available": true
+  },
+  {
+    "id": "r8",
+    "name": "Virgin Sunrise",
+    "category": "mocktail",
+    "description": "A gorgeous gradient of orange juice and grenadine syrup — as beautiful as it is delicious. 100% alcohol-free.",
+    "price": 8.99,
+    "image": "/images/cocktails_bg.png",
+    "alcoholLevel": 0,
+    "prepTime": 2,
+    "totalMl": 200,
+    "ingredients": [
+      { "name": "Orange Juice",    "amount": 150, "unit": "ml" },
+      { "name": "Grenadine Syrup", "amount": 50,  "unit": "ml" }
+    ],
+    "tags": ["alcohol-free", "fruity", "classic"],
+    "available": true
+  },
+  {
+    "id": "r9",
+    "name": "Citrus Mint Cooler",
+    "category": "mocktail",
+    "description": "A zingy, revitalising blend of lemon juice, cooling mint syrup and sweet orange juice. Pure refreshment.",
+    "price": 8.49,
+    "image": "/images/mojito.png",
+    "alcoholLevel": 0,
+    "prepTime": 2,
+    "totalMl": 210,
+    "ingredients": [
+      { "name": "Lemon Juice",  "amount": 60,  "unit": "ml" },
+      { "name": "Mint Syrup",   "amount": 40,  "unit": "ml" },
+      { "name": "Orange Juice", "amount": 110, "unit": "ml" }
+    ],
+    "tags": ["alcohol-free", "citrus", "refreshing"],
+    "available": true
+  },
+  {
+    "id": "r10",
+    "name": "Grenadine Fizz",
+    "category": "mocktail",
+    "description": "Sweet grenadine syrup balanced with sharp lemon juice and fruity orange. A layered beauty in a glass.",
+    "price": 8.99,
+    "image": "/images/cosmopolitan.png",
+    "alcoholLevel": 0,
+    "prepTime": 2,
+    "totalMl": 205,
+    "ingredients": [
+      { "name": "Grenadine Syrup", "amount": 50,  "unit": "ml" },
+      { "name": "Lemon Juice",     "amount": 45,  "unit": "ml" },
+      { "name": "Orange Juice",    "amount": 110, "unit": "ml" }
+    ],
+    "tags": ["alcohol-free", "sweet", "fruity"],
+    "available": true
+  },
+  {
+    "id": "r11",
+    "name": "Blue Mint Lemonade",
+    "category": "mocktail",
+    "description": "Striking blue curaçao syrup mixed with fresh lemon and sweet mint. A showstopper with zero alcohol.",
+    "price": 9.49,
+    "image": "/images/blue_lagoon.png",
+    "alcoholLevel": 0,
+    "prepTime": 2,
+    "totalMl": 190,
+    "ingredients": [
+      { "name": "Blue Curaçao", "amount": 70,  "unit": "ml" },
+      { "name": "Mint Syrup",   "amount": 40,  "unit": "ml" },
+      { "name": "Lemon Juice",  "amount": 80,  "unit": "ml" }
+    ],
+    "tags": ["alcohol-free", "striking", "minty"],
+    "available": true
+  },
+  {
+    "id": "r12",
+    "name": "Tropical Bliss",
+    "category": "mocktail",
+    "description": "Grenadine sweetness, orange juice freshness and a hint of cool mint — tropical paradise, alcohol-free.",
+    "price": 9.99,
+    "image": "/images/cocktails_bg.png",
+    "alcoholLevel": 0,
+    "prepTime": 2,
+    "totalMl": 220,
+    "ingredients": [
+      { "name": "Orange Juice",    "amount": 110, "unit": "ml" },
+      { "name": "Grenadine Syrup", "amount": 60,  "unit": "ml" },
+      { "name": "Mint Syrup",      "amount": 50,  "unit": "ml" }
+    ],
+    "tags": ["alcohol-free", "tropical", "sweet"],
+    "available": true
+  }
+]

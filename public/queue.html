@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MixMaster Pro — Order Queue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .queue-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 24px 60px; }
+    .queue-container { max-width: 680px; width: 100%; text-align: center; }
+    /* Status Banner */
+    .status-banner {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 10px 24px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.5px; margin-bottom: 40px; border: 1px solid;
+    }
+    .status-banner.queued { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: var(--gold); }
+    .status-banner.mixing { background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.4); color: var(--cyan); }
+    .status-banner.ready { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4); color: #10b981; }
+    .status-banner.collected { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.4); color: #8b5cf6; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .status-dot.queued { background: var(--gold); animation: pulse 2s infinite; }
+    .status-dot.mixing { background: var(--cyan); animation: pulse 1s infinite; }
+    .status-dot.ready { background: #10b981; }
+    /* Queue number */
+    .queue-number-wrap { position: relative; margin-bottom: 40px; }
+    .queue-ring {
+      width: 220px; height: 220px; border-radius: 50%; margin: 0 auto;
+      border: 3px solid var(--glass-border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative; background: rgba(255,255,255,0.03);
+    }
+    .queue-ring::before {
+      content: ''; position: absolute; inset: -8px; border-radius: 50%;
+      border: 2px solid transparent;
+      background: var(--gradient-brand) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      animation: spin 3s linear infinite;
+    }
+    .queue-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+    .queue-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem; font-weight: 900; line-height: 1;
+      background: var(--gradient-brand);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .queue-sublabel { font-size: 0.82rem; color: var(--text-muted); }
+    /* Machine animation */
+    .machine-visual {
+      margin: 0 auto 40px;
+      width: 180px; height: 180px;
+      background: var(--bg-card); border: 1px solid var(--glass-border);
+      border-radius: 24px; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .machine-visual::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(245,158,11,0.05) 0%, rgba(6,182,212,0.05) 100%);
+    }
+    .machine-icon { font-size: 5rem; }
+    .liquid-drop {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 12px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: var(--gradient-gold); opacity: 0;
+    }
+    .mixing .liquid-drop { animation: drip 1.5s ease infinite; }
+    @keyframes drip {
+      0% { height: 0; bottom: 40px; opacity: 1; }
+      80% { height: 24px; bottom: 10px; opacity: 1; }
+      100% { height: 24px; bottom: 0; opacity: 0; }
+    }
+    /* Order details card */
+    .order-card {
+      background: var(--bg-card); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card); padding: 28px; text-align: left; margin-bottom: 32px;
+    }
+    .order-card-title {
+      font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .order-detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; }
+    .order-detail-row:last-child { border-bottom: none; }
+    .order-detail-label { color: var(--text-secondary); }
+    .order-detail-value { font-weight: 600; }
+    /* Progress steps */
+    .progress-steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 40px; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .step-circle {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; transition: var(--transition); background: var(--bg-card);
+    }
+    .step-circle.done { border-color: var(--gold); background: rgba(245,158,11,0.15); }
+    .step-circle.active { border-color: var(--cyan); background: rgba(6,182,212,0.15); animation: pulse 1.5s infinite; }
+    .step-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .step-label.done { color: var(--gold); }
+    .step-label.active { color: var(--cyan); }
+    .step-line { width: 60px; height: 2px; background: var(--glass-border); margin-bottom: 22px; }
+    .step-line.done { background: var(--gradient-gold); }
+    /* Wait time */
+    .wait-info { display: flex; gap: 20px; justify-content: center; margin-bottom: 32px; }
+    .wait-card {
+      background: var(--bg-card); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 20px 28px; text-align: center; min-width: 130px;
+    }
+    .wait-value { font-size: 2rem; font-weight: 700; color: var(--gold); }
+    .wait-unit { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    /* Back button */
+    .new-order-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; background: transparent;
+      border: 1px solid var(--glass-border); border-radius: 50px;
+      color: var(--text-secondary); font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; font-weight: 500; cursor: pointer; text-decoration: none;
+      transition: var(--transition);
+    }
+    .new-order-btn:hover { border-color: var(--gold); color: var(--gold); }
+    /* Ready state */
+    .ready-celebration { animation: bounceIn 0.8s ease; }
+    @keyframes bounceIn { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    /* Error / not found */
+    .error-state { text-align: center; padding: 60px 24px; }
+    .error-state h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="particles" class="particles-canvas"></canvas>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo" style="text-decoration:none">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 6h24l-3 14H11L8 6z" stroke="url(#g2)" stroke-width="2" fill="none"/><path d="M11 20v10a2 2 0 002 2h14a2 2 0 002-2V20" stroke="url(#g2)" stroke-width="2"/><circle cx="20" cy="10" r="2" fill="url(#g2)"/><defs><linearGradient id="g2" x1="8" y1="6" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs></svg>
+        </div>
+        <div class="logo-text"><span class="logo-main">MixMaster</span><span class="logo-sub">PRO</span></div>
+      </a>
+      <div style="font-size:0.85rem;color:var(--text-muted);">Step 3 of 3 — Queue Status</div>
+    </div>
+  </header>
+
+  <main class="queue-page">
+    <div class="queue-container" id="queueContainer">
+      <div class="loading-state"><div class="spinner"></div><p>Loading your order...</p></div>
+    </div>
+  </main>
+
+  <script>
+  // Particles
+  (function(){const c=document.getElementById('particles'),ctx=c.getContext('2d');let p=[];function r(){c.width=window.innerWidth;c.height=window.innerHeight;}r();window.addEventListener('resize',r);for(let i=0;i<40;i++)p.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5+.5,dx:(Math.random()-.5)*.25,dy:(Math.random()-.5)*.25,col:Math.random()>.5?'#f59e0b':'#06b6d4',a:Math.random()*.4+.1});function draw(){ctx.clearRect(0,0,c.width,c.height);p.forEach(pt=>{ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r,0,Math.PI*2);ctx.fillStyle=pt.col;ctx.globalAlpha=pt.a;ctx.fill();pt.x+=pt.dx;pt.y+=pt.dy;if(pt.x<0||pt.x>c.width)pt.dx*=-1;if(pt.y<0||pt.y>c.height)pt.dy*=-1;});ctx.globalAlpha=1;requestAnimationFrame(draw);}draw();})();
+
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('order') || localStorage.getItem('mm_last_order');
+  let pollInterval = null;
+
+  function getStatusConfig(status) {
+    const configs = {
+      queued:    { label: '⏳ In Queue', cls: 'queued', icon: '⏳', steps: [true, false, false], machineIcon: '🤖' },
+      mixing:    { label: '🔄 Mixing Now!', cls: 'mixing', icon: '🔄', steps: [true, true, false], machineIcon: '🍸' },
+      ready:     { label: '✅ Ready to Collect!', cls: 'ready', icon: '✅', steps: [true, true, true], machineIcon: '🎉' },
+      collected: { label: '🎊 Collected — Enjoy!', cls: 'collected', icon: '🎊', steps: [true, true, true], machineIcon: '😊' }
+    };
+    return configs[status] || configs.queued;
+  }
+
+  function renderQueue(order) {
+    const cfg = getStatusConfig(order.status);
+    const stepLabels = ['Paid', 'Mixing', 'Ready'];
+    const stepIcons = ['💳', '🔄', '✅'];
+    const stepStates = cfg.steps;
+    const container = document.getElementById('queueContainer');
+
+    const isReady = order.status === 'ready' || order.status === 'collected';
+
+    container.innerHTML = `
+      <div class="status-banner ${cfg.cls}">
+        <div class="status-dot ${cfg.cls}"></div>
+        ${cfg.label}
+      </div>
+
+      <div class="queue-number-wrap ${isReady ? 'ready-celebration' : ''}">
+        ${isReady
+          ? `<div class="machine-visual"><div class="machine-icon">🎉</div></div>`
+          : `<div class="queue-ring ${order.status === 'mixing' ? 'mixing' : ''}">
+              <div class="liquid-drop"></div>
+              <div class="queue-label">Queue Position</div>
+              <div class="queue-num">${order.status === 'mixing' ? '🍹' : '#' + (order.queuePosition || 1)}</div>
+              <div class="queue-sublabel">${order.status === 'mixing' ? 'Being crafted now' : 'in line'}</div>
+            </div>`}
+      </div>
+
+      <div class="progress-steps">
+        ${stepLabels.map((lbl, i) => `
+          <div class="step">
+            <div class="step-circle ${stepStates[i] && i < stepStates.filter(Boolean).length - (order.status === 'mixing' && i === 1 ? 0 : 1) ? 'done' : stepStates[i] ? (order.status === 'mixing' && i===1 ? 'active' : 'done') : ''}">
+              ${stepIcons[i]}
+            </div>
+            <div class="step-label ${stepStates[i] ? 'done' : ''}">${lbl}</div>
+          </div>
+          ${i < 2 ? `<div class="step-line ${stepStates[i+1] ? 'done' : ''}"></div>` : ''}
+        `).join('')}
+      </div>
+
+      ${!isReady ? `
+      <div class="wait-info">
+        <div class="wait-card">
+          <div class="wait-value">${order.queuePosition || 1}</div>
+          <div class="wait-unit">Position</div>
+        </div>
+        <div class="wait-card">
+          <div class="wait-value">${order.estimatedWait || 3}</div>
+          <div class="wait-unit">Min Wait</div>
+        </div>
+      </div>` : `
+      <div style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:32px">
+        🍹 Your drink is ready at the machine! Please collect it now.
+      </div>`}
+
+      <div class="order-card">
+        <div class="order-card-title">📋 Order Details</div>
+        <div class="order-detail-row"><span class="order-detail-label">Customer</span><span class="order-detail-value">${order.customerName}</span></div>
+        <div class="order-detail-row"><span class="order-detail-label">Table/Seat</span><span class="order-detail-value">${order.tableNumber}</span></div>
+        <div class="order-detail-row"><span class="order-detail-label">Order ID</span><span class="order-detail-value" style="font-size:0.8rem;color:var(--text-muted)">${order.id}</span></div>
+        <div class="order-detail-row"><span class="order-detail-label">Items</span><span class="order-detail-value">${order.items.map(i => `${i.name} ×${i.qty}`).join(', ')}</span></div>
+        <div class="order-detail-row"><span class="order-detail-label">Total Paid</span><span class="order-detail-value" style="color:var(--gold)">$${parseFloat(order.totalAmount).toFixed(2)}</span></div>
+      </div>
+
+      <a href="/" class="new-order-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Order Another Drink
+      </a>`;
+  }
+
+  async function pollOrder() {
+    if (!orderId) {
+      document.getElementById('queueContainer').innerHTML = `
+        <div class="error-state">
+          <div style="font-size:4rem;margin-bottom:16px">🔍</div>
+          <h2>Order Not Found</h2>
+          <p style="color:var(--text-secondary);margin-bottom:24px">We couldn't find your order details.</p>
+          <a href="/" class="new-order-btn">← Back to Menu</a>
+        </div>`;
+      return;
+    }
+    try {
+      const res = await fetch('/api/orders/' + orderId);
+      if (!res.ok) throw new Error('not found');
+      const order = await res.json();
+      renderQueue(order);
+      if (order.status === 'collected') clearInterval(pollInterval);
+    } catch(e) {
+      document.getElementById('queueContainer').innerHTML = `
+        <div class="error-state">
+          <h2>Could not load order</h2>
+          <p style="color:var(--text-secondary)">Please check your connection.</p>
+          <a href="/" class="new-order-btn" style="margin-top:20px;display:inline-flex">← Back to Menu</a>
+        </div>`;
+    }
+  }
+
+  pollOrder();
+  pollInterval = setInterval(pollOrder, 4000);
+  </script>
+</body>
+</html>

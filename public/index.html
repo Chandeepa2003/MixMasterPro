@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MixMaster Pro — Craft Your Perfect Drink</title>
+  <meta name="description" content="Order cocktails and mocktails from our automated mixing machine. Choose from the menu or build your own custom drink." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    /* ── Ingredient badges ─────────────────────────────────── */
+    .ing-badges{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+    .ing-badge{font-size:10px;padding:3px 8px;border-radius:20px;border:1px solid;background:transparent;letter-spacing:.02em;white-space:nowrap}
+    .drink-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .drink-time{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary)}
+    .drink-time svg{width:12px;height:12px}
+    .af-badge{position:absolute;top:10px;left:10px;background:#10b98122;border:1px solid #10b981;color:#10b981;font-size:9px;padding:3px 8px;border-radius:20px;font-weight:600;letter-spacing:.05em}
+    .cart-custom-tag{font-size:10px;color:#f59e0b;margin:2px 0}
+
+    /* ── Custom Builder Section ─────────────────────────────── */
+    #customBuilderSection{display:none;padding:0 0 60px 0;animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+    .builder-wrap{display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start;max-width:1100px;margin:0 auto;padding:0 24px}
+    @media(max-width:768px){.builder-wrap{grid-template-columns:1fr}}
+
+    .builder-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px}
+    .builder-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--text-primary);margin-bottom:6px}
+    .builder-subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:24px}
+
+    .slider-row{margin-bottom:20px}
+    .slider-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .slider-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text-primary)}
+    .slider-label .pump-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .slider-val{font-size:13px;font-weight:700;min-width:44px;text-align:right}
+    .custom-slider{width:100%;height:6px;border-radius:3px;outline:none;border:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+    .custom-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+
+    .total-bar{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 20px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .total-bar label{font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em}
+    #customTotalMl{font-size:18px;font-weight:700;font-family:'Courier New',monospace;transition:color .3s}
+    .total-warning{font-size:11px;color:#ef4444;display:none}
+    .name-input{width:100%;margin-top:16px;padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:var(--text-primary);font-size:14px;outline:none;transition:border-color .2s}
+    .name-input:focus{border-color:rgba(245,158,11,.5)}
+    .name-input::placeholder{color:var(--text-secondary)}
+    .builder-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+    .reset-btn{padding:10px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all .2s}
+    .reset-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text-primary)}
+    .add-custom-btn{flex:1;padding:12px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#06b6d4);color:#000;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .add-custom-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(245,158,11,.3)}
+    .add-custom-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+    /* Cup visualiser */
+    .cup-panel{display:flex;flex-direction:column;align-items:center;gap:16px;position:sticky;top:100px}
+    .cup-vis{position:relative;width:120px;height:200px}
+    .cup-outline{position:absolute;inset:0}
+    .cup-liquid{position:absolute;bottom:8px;left:12px;right:12px;border-radius:0 0 12px 12px;transition:height .4s ease,background .6s ease;overflow:hidden}
+    .cup-label{font-size:11px;color:var(--text-secondary);text-align:center;letter-spacing:.05em;text-transform:uppercase}
+    .price-tag{font-size:28px;font-weight:900;font-family:'Playfair Display',serif;background:linear-gradient(135deg,#f59e0b,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .price-label{font-size:11px;color:var(--text-secondary);text-align:center}
+    .ingredient-legend{width:100%;background:rgba(0,0,0,.2);border-radius:12px;padding:12px}
+    .legend-title{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+    .legend-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;margin-bottom:4px}
+    .legend-dot{width:8px;height:8px;border-radius:50%;margin-right:6px;flex-shrink:0}
+    .legend-name{flex:1;color:var(--text-secondary)}
+    .legend-ml{font-weight:700;font-family:'Courier New',monospace}
+  </style>
+</head>
+<body>
+
+  <!-- Particle Canvas Background -->
+  <canvas id="particles" class="particles-canvas"></canvas>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 6h24l-3 14H11L8 6z" stroke="url(#grad1)" stroke-width="2" fill="none"/>
+            <path d="M11 20v10a2 2 0 002 2h14a2 2 0 002-2V20" stroke="url(#grad1)" stroke-width="2"/>
+            <path d="M15 14l2 8M25 14l-2 8" stroke="url(#grad1)" stroke-width="1.5" opacity="0.6"/>
+            <circle cx="20" cy="10" r="2" fill="url(#grad1)"/>
+            <defs>
+              <linearGradient id="grad1" x1="8" y1="6" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#06b6d4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">MixMaster</span>
+          <span class="logo-sub">PRO</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="cart-btn" id="cartBtn" onclick="toggleCart()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="/images/hero_bg.png" alt="Cocktail bar ambience" class="hero-img" />
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Automated Cocktail Bar
+      </div>
+      <h1 class="hero-title">
+        Craft Your<br/>
+        <span class="gradient-text">Perfect Drink</span>
+      </h1>
+      <p class="hero-subtitle">
+        Choose from 12 expert recipes — or build your own custom blend.<br/>
+        Our precision machine crafts every drop to perfection.
+      </p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-number">12</span><span class="stat-label">Recipes</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-number">&lt;3min</span><span class="stat-label">Per Drink</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-number">250ml</span><span class="stat-label">Cup Size</span></div>
+      </div>
+      <a href="#menu" class="hero-cta" onclick="scrollToMenu()">
+        <span>Browse Menu</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== MENU SECTION ===== -->
+  <section class="menu-section" id="menu">
+    <div class="section-header">
+      <p class="section-eyebrow">Our Selection</p>
+      <h2 class="section-title">Choose Your <span class="gradient-text">Pleasure</span></h2>
+      <p class="section-desc">Expert recipes from our mixologist — or craft your own with 6 premium ingredients.</p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs" id="categoryTabs">
+      <button class="tab-btn active" data-cat="all" onclick="filterDrinks('all', this)">
+        <span>🍹</span> All Drinks
+      </button>
+      <button class="tab-btn" data-cat="cocktail" onclick="filterDrinks('cocktail', this)">
+        <span>🥂</span> Cocktails
+      </button>
+      <button class="tab-btn" data-cat="mocktail" onclick="filterDrinks('mocktail', this)">
+        <span>🧃</span> Mocktails
+      </button>
+      <button class="tab-btn tab-build" data-cat="custom" onclick="filterDrinks('custom', this)">
+        <span>⚗️</span> Build Your Own
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <p>Loading our menu...</p>
+    </div>
+
+    <!-- Drinks Grid -->
+    <div class="drinks-grid" id="drinksGrid"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">🍸</div>
+      <h3>No drinks found</h3>
+      <p>Try a different category</p>
+    </div>
+
+    <!-- ===== CUSTOM BUILDER ===== -->
+    <div id="customBuilderSection">
+      <div class="builder-wrap">
+
+        <!-- Left: Sliders Panel -->
+        <div class="builder-panel">
+          <h2 class="builder-title">Build Your Own Cocktail</h2>
+          <p class="builder-subtitle">Adjust the sliders to choose how much of each ingredient you want. Total must not exceed 250ml (standard cup size).</p>
+
+          <!-- Pump sliders -->
+          <div id="sliderContainer">
+            <!-- Generated by JS -->
+          </div>
+
+          <div class="total-bar">
+            <div>
+              <label>Total Liquid</label>
+              <div id="customTotalMl" style="font-size:18px;font-weight:700;font-family:'Courier New',monospace;">0ml / 250ml</div>
+            </div>
+            <div style="text-align:right">
+              <label>Est. Price</label>
+              <div id="customPriceEl" style="font-size:18px;font-weight:700;color:#f59e0b;">$8.99</div>
+            </div>
+          </div>
+
+          <input type="text" id="customDrinkName" class="name-input"
+                 placeholder="Name your drink (optional)..." maxlength="40" />
+
+          <div class="builder-actions">
+            <button class="reset-btn" onclick="resetCustom()">↺ Reset</button>
+            <button class="add-custom-btn" id="addCustomBtn" onclick="addCustomToCart()" disabled>
+              🛒 Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Cup Visualiser -->
+        <div class="cup-panel">
+          <p class="cup-label">Your Cup</p>
+          <div class="cup-vis">
+            <svg class="cup-outline" viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 10 L20 190 Q60 200 100 190 L110 10 Z"
+                    stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="rgba(255,255,255,0.03)"/>
+              <line x1="10" y1="10" x2="110" y2="10" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+            </svg>
+            <div id="customCupFill" class="cup-liquid" style="height:0%;background:rgba(100,160,255,0.3)"></div>
+          </div>
+
+          <div class="price-label">Estimated Price</div>
+          <div class="price-tag" id="cupPriceTag">$8.99</div>
+
+          <div class="ingredient-legend" id="ingredientLegend">
+            <div class="legend-title">Ingredients</div>
+            <div id="legendRows">
+              <div style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:8px 0">
+                Use the sliders to add ingredients
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== CART SIDEBAR ===== -->
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3>Your Order</h3>
+      <button class="cart-close" onclick="toggleCart()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty" id="cartEmpty">
+        <div class="cart-empty-icon">🛒</div>
+        <p>Your cart is empty</p>
+        <span>Add some drinks to get started!</span>
+      </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-summary">
+        <div class="summary-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+        <div class="summary-row"><span>Service Fee</span><span>$0.99</span></div>
+        <div class="summary-divider"></div>
+        <div class="summary-row total"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      </div>
+      <button class="checkout-btn" onclick="proceedToCheckout()">
+        <span>Proceed to Payment</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/menu.js"></script>
+  <script>
+  // ── Build slider UI from PUMPS array ──────────────────────────
+  (function buildSliders() {
+    const container = document.getElementById('sliderContainer');
+    container.innerHTML = PUMPS.map((pump, i) => `
+      <div class="slider-row">
+        <div class="slider-header">
+          <div class="slider-label">
+            <div class="pump-dot" style="background:${pump.color}"></div>
+            ${pump.emoji} ${pump.name}
+            ${pump.isAlcohol ? '<span style="font-size:10px;color:#f59e0b;margin-left:4px">🍺 Alcohol</span>' : ''}
+          </div>
+          <span class="slider-val" id="sliderVal_${i}" style="color:${pump.color}">0ml</span>
+        </div>
+        <input type="range" class="custom-slider" id="slider_${i}"
+               min="0" max="250" step="5" value="0"
+               style="accent-color:${pump.color};background:rgba(255,255,255,0.08)"
+               oninput="onSliderChange(${i}, this.value); updateLegend()" />
+      </div>`
+    ).join('');
+  })();
+
+  // ── Update cup legend ──────────────────────────────────────
+  function updateLegend() {
+    const rows = document.getElementById('legendRows');
+    const priceTag = document.getElementById('cupPriceTag');
+    const active = PUMPS.map((p, i) => ({...p, ml: customMls[i]})).filter(p => p.ml > 0);
+    if (!active.length) {
+      rows.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:8px 0">Use the sliders to add ingredients</div>';
+      priceTag.textContent = '$8.99';
+      return;
+    }
+    const total = customMls.reduce((s,v) => s+v, 0);
+    const price = (8.99 + total * 0.03).toFixed(2);
+    priceTag.textContent = '$' + price;
+    rows.innerHTML = active.map(p => `
+      <div class="legend-row">
+        <div class="legend-dot" style="background:${p.color}"></div>
+        <span class="legend-name">${p.emoji} ${p.name}</span>
+        <span class="legend-ml" style="color:${p.color}">${p.ml}ml</span>
+      </div>`).join('');
+  }
+
+  // Sync tab-build button style
+  document.querySelector('.tab-build') && (() => {
+    const btn = document.querySelector('.tab-build');
+    btn.style.borderColor = 'rgba(245,158,11,0.4)';
+  })();
+  </script>
+</body>
+</html>
