@@ -8,13 +8,13 @@
 #define SERIAL_BAUD            115200
 
 // ── WiFi (edit before flashing) ───────────────────────────────
-#define WIFI_SSID     "GAME STORE SRI LANKA-2.4G"
-#define WIFI_PASSWORD "Chandeepa03"
+#define WIFI_SSID     "Redmi Note 13"
+#define WIFI_PASSWORD "vish1234"
 #define WIFI_TIMEOUT_MS  15000   // max time to connect
 
 // ── Main Server callback ───────────────────────────────────────
 // The ESP32 POSTs its status back to this address every 2 seconds
-#define SERVER_IP    "192.168.1.29"   // <- Change to your PC 1 IP
+#define SERVER_IP    "10.228.55.107"   // <- Change to your PC 1 IP
 #define SERVER_PORT   3000
 #define STATUS_POST_INTERVAL_MS  2000
 
@@ -73,4 +73,5 @@ float PUMP_MS_PER_ML[NUM_PUMPS] = {
 #define STATE_CLEAN_MIX   "CLEAN_MIX"
 #define STATE_CLEAN_DRAIN "CLEAN_DRAIN"
 #define STATE_ERROR       "ERROR"
+
 

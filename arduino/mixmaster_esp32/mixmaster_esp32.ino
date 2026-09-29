@@ -31,7 +31,7 @@ uint32_t cleanMixStartMs    = 0;
 uint32_t mixingStartMs      = 0;
 uint32_t drainStartMs       = 0;
 float    expectedDrinkVolume= 0;
-float    outPumpMsPerMl     = 50.0f; // Default for centrifugal
+float    outPumpMsPerMl     = 150.0f; // Increased to ensure full drain
 
 
 // =============================================================
@@ -258,10 +258,10 @@ void setup() {
   pinMode(OUT_PUMP_2_RELAY_PIN, OUTPUT);
   pinMode(CLEAN_PUMP_RELAY_PIN, OUTPUT);
   
-  // Relays are active LOW, so start them HIGH
+  // Relays are active LOW, so start them HIGH (OFF)
   digitalWrite(OUT_PUMP_1_RELAY_PIN, HIGH);
   digitalWrite(OUT_PUMP_2_RELAY_PIN, HIGH);
-  digitalWrite(CLEAN_PUMP_RELAY_PIN, LOW);
+  digitalWrite(CLEAN_PUMP_RELAY_PIN, HIGH); // Water pump OFF on boot
 
   ultrasonic_init();
   pumpController_init();

@@ -189,7 +189,7 @@
         <!-- Left: Sliders Panel -->
         <div class="builder-panel">
           <h2 class="builder-title">Build Your Own Cocktail</h2>
-          <p class="builder-subtitle">Adjust the sliders to choose how much of each ingredient you want. Total must not exceed 250ml (standard cup size).</p>
+          <p class="builder-subtitle">Adjust the sliders to choose how much of each ingredient you want. Total must not exceed 200ml (max cup size).</p>
 
           <!-- Pump sliders -->
           <div id="sliderContainer">
@@ -297,7 +297,7 @@
           <span class="slider-val" id="sliderVal_${i}" style="color:${pump.color}">0ml</span>
         </div>
         <input type="range" class="custom-slider" id="slider_${i}"
-               min="0" max="250" step="5" value="0"
+               min="0" max="200" step="5" value="0"
                style="accent-color:${pump.color};background:rgba(255,255,255,0.08)"
                oninput="onSliderChange(${i}, this.value); updateLegend()" />
       </div>`
@@ -333,3 +333,5 @@
   </script>
 </body>
 </html>
+
+
